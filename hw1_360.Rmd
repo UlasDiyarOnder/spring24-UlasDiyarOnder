@@ -1,0 +1,279 @@
+---
+title: "360HW1"
+author: "Ulaş Diyar Önder"
+date: "2024-04-02"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+
+```{r}
+require(data.table)
+require(lubridate)
+require(forecast)
+require(skimr)
+require(repr)
+require(openxlsx) 
+require(ggplot2)
+require(data.table)
+require(skimr)
+require(GGally)
+require(ggcorrplot)
+require(forecast)
+
+options(repr.plot.width=12.7, repr.plot.height=8.5)
+
+data_path="C:\\Users\\ferza\\Desktop\\360.xlsx"
+data=read.xlsx(data_path)
+head(data,55)
+str(data)
+```
+
+```{r}
+data_path="C:\\Users\\ferza\\Desktop\\araba veri.xlsx"
+araba=read.xlsx(data_path)
+head(araba,55)
+str(araba)
+```
+```{r}
+require(lubridate)
+
+araba$Tarih <- ym(araba$Tarih)
+araba$TP.DK.USD.C.YTL <- as.numeric(araba$TP.DK.USD.C.YTL)
+araba$TP.TG2.Y01 <- as.numeric(araba$TP.TG2.Y01)
+```
+
+
+```{r}
+data_path="C:\\Users\\ferza\\Desktop\\ev veriler.xlsx"
+ev=read.xlsx(data_path)
+head(ev,55)
+str(ev)
+```
+
+```{r}
+ev$Tarih <- ym(ev$Tarih)
+ev$TP.DK.USD.C.YTL <- as.numeric(ev$TP.DK.USD.C.YTL)
+ev$TP.IN.RH1.APT.TOP.A <- as.numeric(ev$TP.IN.RH1.APT.TOP.A)
+```
+
+
+```{r}
+data_path="C:\\Users\\ferza\\Desktop\\şirektveri.xlsx"
+sirket=read.xlsx(data_path)
+head(sirket,55)
+str(sirket)
+```
+```{r}
+sirket$Tarih <- ym(sirket$Tarih)
+sirket$TP.YISGUCU2.G3 <- as.numeric(sirket$TP.YISGUCU2.G3)
+sirket$TP.KTF17 <- as.numeric(sirket$TP.KTF17)
+```
+
+```{r}
+data$Tarih <- ym(data$Tarih)
+data$TP.AKONUTSAT1.TOPLAM <- as.numeric(data$TP.AKONUTSAT1.TOPLAM)
+data$TP.UR.S08 <- as.numeric(data$TP.UR.S08)
+data$TP.AC2.ANO.A <- as.numeric(data$TP.AC2.ANO.A)
+
+str(data)
+```
+```{r}
+# numerical statistics of the data
+summary_data=skim(data)
+print(summary_data)
+```
+```{r}
+tail(data,22)
+```
+```{r}
+data <- na.omit(data)
+araba <- na.omit(araba)
+sirket <- na.omit(sirket)
+ev <- na.omit(ev)
+summary_data=skim(data)
+print(summary_data)
+```
+```{r}
+araba_trend_link = "C:\\Users\\ferza\\Desktop\\araba.csv"
+sirket_trend_link = "C:\\Users\\ferza\\Desktop\\şirket açma.csv"
+ev_trend_link = "C:\\Users\\ferza\\Desktop\\ev alma.csv"
+
+ev_trend = read.csv(ev_trend_link,header = TRUE,stringsAsFactors = FALSE)
+araba_trend = read.csv(araba_trend_link,header = TRUE,stringsAsFactors=FALSE)
+sirket_trend = read.csv(sirket_trend_link,header = TRUE,stringsAsFactors=FALSE)
+str(ev_trend)
+str(araba_trend)
+str(sirket_trend)
+```
+```{r}
+araba_trend$Ay <- ym(araba_trend$Ay)
+ev_trend$Ay <- ym(ev_trend$Ay)
+sirket_trend$Ay <- ym(sirket_trend$Ay)
+```
+
+
+```{r}
+ggplot(data ,aes(x=Tarih,y=TP.AKONUTSAT1.TOPLAM)) + geom_line()
+ggplot(ev_trend ,aes(x=Ay,y=evalma)) + geom_line()
+```
+```{r}
+ggplot(data ,aes(x=Tarih,y=data$TP.AC2.ANO.A)) + geom_line()
+ggplot(sirket_trend ,aes(x=Ay,y=sirket_trend$SirketAcma)) + geom_line()
+```
+
+```{r}
+ggplot(data ,aes(x=Tarih,y=data$TP.UR.S08)) + geom_line()
+ggplot(araba_trend ,aes(x=Ay,y=araba_trend$araba)) + geom_line()
+```
+
+```{r}
+ggplot(data ,aes(x=Tarih,y=TP.AKONUTSAT1.TOPLAM)) + geom_line()
+ggplot(data ,aes(x=Tarih,y=TP.UR.S08)) + geom_line()
+ggplot(data ,aes(x=Tarih,y=TP.AC2.ANO.A)) + geom_line()
+```
+
+```{r}
+require(GGally)
+ggpairs(data)
+```
+
+```{r}
+require(tidyverse)
+colnames(araba_trend)[colnames(araba_trend)=='Ay'] <- 'Tarih'
+set <- list(data,araba_trend,araba)
+araba_data <- set %>% reduce(inner_join, by='Tarih')
+head(araba_data)
+```
+```{r}
+ggpairs(araba_data)
+```
+
+```{r}
+require(tidyverse)
+colnames(ev_trend)[colnames(ev_trend)=='Ay'] <- 'Tarih'
+set <- list(data,ev_trend,ev)
+ev_data <- set %>% reduce(inner_join, by='Tarih')
+head(ev_data)
+```
+```{r}
+ggpairs(ev_data)
+```
+```{r}
+colnames(sirket_trend)[colnames(sirket_trend)=='Ay'] <- 'Tarih'
+set <- list(data,sirket_trend,sirket)
+sirket_data <- set %>% reduce(inner_join, by='Tarih')
+head(sirket_data)
+```
+```{r}
+ggpairs(sirket_data)
+```
+
+
+```{r}
+ggplot(data ,aes(x=Tarih,y=data$TP.AKONUTSAT1.TOPLAM)) + geom_point()+geom_smooth(method='lm')
+ggplot(data ,aes(x=Tarih,y=data$TP.UR.S08)) + geom_point()+geom_smooth(method='lm')
+ggplot(data ,aes(x=Tarih,y=data$TP.AC2.ANO.A)) + geom_point()+geom_smooth(method='lm')
+```
+
+```{r}
+araba_data <- as.data.table(araba_data)
+araba_data[,trnd:=1:.N]
+araba_data[,yil:=as.character(month(Tarih,label=T))]
+araba_data[,ay:=as.character(month(Tarih,label=T))]
+head(araba_data)
+```
+```{r}
+ev_data <- as.data.table(ev_data)
+ev_data[,trnd:=1:.N]
+ev_data[,yil:=as.character(month(Tarih,label=T))]
+ev_data[,ay:=as.character(month(Tarih,label=T))]
+head(ev_data)
+```
+```{r}
+sirket_data <- as.data.table(sirket_data)
+sirket_data[,trnd:=1:.N]
+sirket_data[,yil:=as.character(month(Tarih,label=T))]
+sirket_data[,ay:=as.character(month(Tarih,label=T))]
+head(sirket_data)
+```
+
+```{r}
+ggplot(araba_data,aes(x=TP.UR.S08,y=TP.TG2.Y01)) +
+        geom_point() + geom_smooth(method=lm,linewidth=3) + facet_wrap(~ay)
+ggplot(araba_data,aes(x=TP.UR.S08,y=araba)) +
+        geom_point() + geom_smooth(method=lm,linewidth=3) + facet_wrap(~ay)
+ggplot(araba_data,aes(x=TP.UR.S08,y=TP.DK.USD.C.YTL)) +
+        geom_point() + geom_smooth(method=lm,linewidth=3) + facet_wrap(~ay)
+```
+
+
+```{r}
+lm_base=lm(TP.UR.S08~trnd+ay+yil+araba+TP.DK.USD.C.YTL+TP.TG2.Y01,araba_data)
+summary(lm_base)
+checkresiduals(lm_base$residuals)
+tmp=copy(araba_data)
+tmp[,actual:=TP.UR.S08]
+tmp[,predicted_trend:=predict(lm_base,tmp)]
+tmp[,residual_trend:=actual-predicted_trend]
+#head(tmp)
+ggplot(tmp ,aes(x=Tarih)) +
+        geom_line(aes(y=actual,color='real')) + 
+        geom_line(aes(y=predicted_trend,color='predicted'))
+```
+```{r}
+ggplot(ev_data,aes(x=TP.AKONUTSAT1.TOPLAM,y=ev_data$evalma)) +
+        geom_point() + geom_smooth(method=lm,linewidth=3) + facet_wrap(~ay)
+ggplot(ev_data,aes(x=TP.AKONUTSAT1.TOPLAM,y=ev_data$TP.DK.USD.C.YTL)) +
+        geom_point() + geom_smooth(method=lm,linewidth=3) + facet_wrap(~ay)
+ggplot(ev_data,aes(x=TP.AKONUTSAT1.TOPLAM,y=ev_data$TP.IN.RH1.APT.TOP.A)) +
+        geom_point() + geom_smooth(method=lm,linewidth=3) + facet_wrap(~ay)
+```
+
+```{r}
+lm_base=lm(TP.AKONUTSAT1.TOPLAM~trnd+ay+yil+evalma+TP.DK.USD.C.YTL+TP.IN.RH1.APT.TOP.A,ev_data)
+summary(lm_base)
+checkresiduals(lm_base$residuals)
+tmp=copy(ev_data)
+tmp[,actual:=TP.AKONUTSAT1.TOPLAM]
+tmp[,predicted_trend:=predict(lm_base,tmp)]
+tmp[,residual_trend:=actual-predicted_trend]
+#head(tmp)
+ggplot(tmp ,aes(x=Tarih)) +
+        geom_line(aes(y=actual,color='real')) + 
+        geom_line(aes(y=predicted_trend,color='predicted'))
+```
+
+```{r}
+ggplot(sirket_data,aes(x=sirket_data$TP.AC2.ANO.A,y=sirket_data$SirketAcma)) +
+        geom_point() + geom_smooth(method=lm,linewidth=3) + facet_wrap(~ay)
+ggplot(sirket_data,aes(x=TP.AC2.ANO.A,y=sirket_data$TP.YISGUCU2.G3)) +
+        geom_point() + geom_smooth(method=lm,linewidth=3) + facet_wrap(~ay)
+ggplot(sirket_data,aes(x=TP.AC2.ANO.A,y=sirket_data$TP.KTF17)) +
+        geom_point() + geom_smooth(method=lm,linewidth=3) + facet_wrap(~ay)
+```
+```{r}
+lm_base=lm(TP.AC2.ANO.A~trnd+ay+yil+SirketAcma+TP.YISGUCU2.G3+TP.KTF17,sirket_data)
+summary(lm_base)
+checkresiduals(lm_base$residuals)
+tmp=copy(sirket_data)
+tmp[,actual:=TP.AC2.ANO.A]
+tmp[,predicted_trend:=predict(lm_base,tmp)]
+tmp[,residual_trend:=actual-predicted_trend]
+#head(tmp)
+ggplot(tmp ,aes(x=Tarih)) +
+        geom_line(aes(y=actual,color='real')) + 
+        geom_line(aes(y=predicted_trend,color='predicted'))
+```
+
