@@ -1,31 +1,14 @@
-## Welcome to GitHub Pages
+## Welcome to My GitHub Page
 
-You can use the editor on GitHub to maintain and preview the content for your website in Markdown files.
+My name is Ulaş My homework for IE360 will be available in this page. 
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+### Homework 1
 
-### Markdown
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+[HTML File](https://github.com/UlasDiyarOnder/spring24-UlasDiyarOnder/blob/main/IE_360_HW1_2020402069/hw1_360.html)
+[R Code](https://github.com/UlasDiyarOnder/spring24-UlasDiyarOnder/blob/main/hw1_360.Rmd)
+[PDF of HTML](https://github.com/UlasDiyarOnder/spring24-UlasDiyarOnder/blob/main/IE_360_HW1_2020402069/IE_360.pdf)
+[Excel](https://github.com/UlasDiyarOnder/spring24-UlasDiyarOnder/tree/main/IE_360_HW1_2020402069)
 
 ### Jekyll Themes
 
